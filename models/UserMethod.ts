@@ -1,12 +1,10 @@
 interface UserMethod {
     name: string,
-    role: string,
     email: string,
-    perfil: string,
+    permissao: string,
     action: string,
-    id_user: string,
-    status: string,
-    celphone: string,
+    id: string,
+    isAtivo: number
   }
   
   export default UserMethod
