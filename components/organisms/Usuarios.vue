@@ -125,7 +125,7 @@ export default Vue.extend({
       userMethods: [] as UserMethod[],
       headers: [
         { text: 'id', align: 'start', value: 'id' },
-        { text: 'Nome', align: 'start', value: 'name' },
+        { text: 'Nome', align: 'start', value: 'nome' },
         { text: 'Email', align: 'start', value: 'email' },
         { text: 'Perfil', align: 'start', value: 'permissao' },
         { text: 'Status', align: 'start', value: 'isAtivo' },

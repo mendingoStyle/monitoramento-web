@@ -58,8 +58,17 @@
       <v-card>
         <v-card-text>
           <v-card-title> Cadastrar Novo Veiculo </v-card-title>
-          <v-text-field label="Placa" color="white"> </v-text-field>
+          <v-text-field label="Placa" v-model="placa" color="white">
+          </v-text-field>
+
           <v-card-title>Periodo</v-card-title>
+          <v-checkbox
+            hide-details
+            label="Monitoramentarar Continuamente"
+            v-model="continuo"
+            class="mb-6"
+          ></v-checkbox>
+
           <v-menu
             :close-on-content-click="false"
             ref="dateMenu"
@@ -75,6 +84,7 @@
                 label="Inicio"
                 color="white"
                 v-model="datesFormatted"
+                :disabled="continuo"
                 v-on="on"
                 v-bind="attrs"
                 prepend-inner-icon="mdi-calendar"
@@ -106,6 +116,7 @@
                 label="Fim"
                 v-model="datesFormatted2"
                 v-on="on"
+                :disabled="continuo"
                 color="white"
                 v-bind="attrs"
                 prepend-inner-icon="mdi-calendar"
@@ -122,11 +133,13 @@
               @change="save"
             ></v-date-picker>
           </v-menu>
+          <v-text-field v-model="observacoes" color="white" label="Observações">
+          </v-text-field>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
           <v-btn dark @click="dialog = false"> Voltar </v-btn>
-          <v-btn dark @click="dialog = false"> Confirmar </v-btn>
+          <v-btn dark @click="cadastrarVeiculo"> Confirmar </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -137,37 +150,30 @@
 import Vue from 'vue'
 import VeiculoMethod from '@/models/VeiculoMethod'
 import FormUtils from '@/mixins/FormUtils'
+import { auth, snackbar } from '@/utils/store-access'
+import { $axios } from '@/utils/nuxt-instance'
 
 export default Vue.extend({
   mixins: [FormUtils],
   data() {
     return {
       fullProfile: false,
+      observacoes: '',
       pesquisa: '',
+      placa: '',
       datesFormatted: '',
+      userId: 1,
       activePicker: '',
       activePicker2: '',
       datesFormatted2: '',
+      continuo: false,
       dates: new Date().toISOString().substr(0, 10),
       dates2: new Date().toISOString().substr(0, 10),
       dateMenu: false,
       dateMenu2: false,
       dialog: false,
       VeiculoMethod: {} as VeiculoMethod,
-      veiculoMethods: [
-        {
-          id_veiculo: '1',
-          placa: 'XXX-1234',
-          periodo: '01/07/2021 à 15/07/2021',
-          status: 'Nenhuma ocorrência',
-        },
-        {
-          id_veiculo: '2',
-          placa: 'XXX-4321',
-          periodo: '01/07/2021 à 15/07/2021',
-          status: 'Ocorrência identificada',
-        },
-      ] as VeiculoMethod[],
+      veiculoMethods: [] as VeiculoMethod[],
       headers: [
         { text: 'id', align: 'start', value: 'id_veiculo' },
         { text: 'Placa', align: 'start', value: 'placa' },
@@ -181,6 +187,74 @@ export default Vue.extend({
     save() {
       this.dateMenu = false
       this.dateMenu2 = false
+    },
+    cadastrarVeiculo() {
+      if (!this.placa || !this.userId) {
+        this.error = 'Preencha todos os dados corretamente'
+        snackbar.setMessage(
+          'Não foi possível Cadastrar o Veiculo para monitoramento, Preencha todos os dados.'
+        )
+        snackbar.setSnackbar(true)
+      } else if (
+        !this.continuo &&
+        (!this.datesFormatted ||
+          !this.datesFormatted2 ||
+          this.datesFormatted.getTime() >= this.datesFormatted2.getTime())
+      ) {
+        snackbar.setMessage(
+          'Não foi possível Cadastrar o Veiculo para monitoramento, Datas de inicio e fim inválidas.'
+        )
+        snackbar.setSnackbar(true)
+      } else {
+        const url = `/api/monitoramentos`
+        const body = {
+          placa: this.placa,
+          dataInicio: this.datesFormatted
+            ? this.parseDate(this.datesFormatted)
+            : null,
+          dataFim: this.datesFormatted2
+            ? this.parseDate(this.datesFormatted2)
+            : null,
+          status: 'NENHUMA_OCORRENCIA',
+          isContinuo: this.continuo,
+          usuarioId: 1,
+          observacoes: this.observacoes,
+        }
+        $axios
+          .$post(url, body)
+          .then((r) => {
+            this.dialog = false
+            snackbar.setMessage(
+              'Veiculo para monitoramento Cadastrado com sucesso!.'
+            )
+            snackbar.setSnackbar(true)
+          })
+          .catch((error) => {
+            snackbar.setMessage(
+              'Não foi possível cadastrar o Veiculo para monitoramento, tente mais tarde.'
+            )
+
+            snackbar.setSnackbar(true)
+          })
+      }
+    },
+    buscarUsuarios() {
+      const url = `/api/monitoramentos`
+      $axios
+        .$get(url)
+        .then((r) => {
+          this.veiculoMethods = r
+        })
+        .catch((error) => {
+          if (error.response && error.response.data) {
+            snackbar.setMessage(error.response.data.error)
+          } else {
+            snackbar.setMessage(
+              'Não foi possível consultar os veículos monitorados, tente mais tarde.'
+            )
+          }
+          snackbar.setSnackbar(true)
+        })
     },
   },
 
