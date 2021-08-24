@@ -98,6 +98,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import CameraMethod from '@/models/CameraMethod'
+import { $axios } from '@/utils/nuxt-instance'
 
 export default Vue.extend({
   data() {
@@ -107,20 +108,12 @@ export default Vue.extend({
       dialog: false,
       dialog2: false,
       cameraMethod: {} as CameraMethod,
-      cameraMethods: [
-        {
-          id_camera: '1',
-          name: 'Camera 1',
-        },
-        {
-          id_camera: '2',
-          name: 'Camera 2',
-        },
-      ] as CameraMethod[],
+      cameraMethods: [] as CameraMethod[],
 
       headers: [
-        { text: 'id', align: 'start', value: 'id_camera' },
-        { text: 'Nome do Equipamento', align: 'start', value: 'name' },
+        { text: 'id', align: 'start', value: 'id' },
+        { text: 'Nome do Equipamento', align: 'start', value: 'nome' },
+        { text: 'Mac', align: 'start', value: 'mac' },
         { text: 'Localização/Endereço', align: 'start', value: 'localizacao' },
         { text: 'Ações', align: 'start', value: 'action' },
       ],
@@ -130,6 +123,24 @@ export default Vue.extend({
     editProfile() {
       // TODO
     },
+    buscarCameras() {
+      const url = `/api/cameras`
+      $axios
+        .$get(url)
+        .then((r) => {
+          this.cameraMethods = r
+        })
+        .catch((error) => {
+          if (error.response && error.response.data) {
+            snackbar.setMessage(error.response.data.error)
+          } else {
+            snackbar.setMessage(
+              'Não foi possível consultar as cameras, tente mais tarde.'
+            )
+          }
+          snackbar.setSnackbar(true)
+        })
+    },
     dialogEdit(item: CameraMethod) {
       console.log(item)
       this.dialog = true
@@ -138,6 +149,9 @@ export default Vue.extend({
       console.log(item)
       this.dialog2 = true
     },
+  },
+  created() {
+    this.buscarCameras()
   },
 })
 </script>

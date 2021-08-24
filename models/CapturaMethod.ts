@@ -1,8 +1,9 @@
 interface CameraMethod {
     placa: string,
-    camera: string,
-    datahora: string,
-    id: string,
+    cameraId: number,
+    dataHora: string,
+    id: number,
+    detalhes: string
   }
   
   export default CameraMethod

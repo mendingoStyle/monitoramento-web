@@ -175,7 +175,7 @@ export default Vue.extend({
               snackbar.setMessage(error.response.data.error)
             } else {
               snackbar.setMessage(
-                'Não foi possível cadastarr o usuário, tente mais tarde.'
+                'Não foi possível cadastrar o usuário, tente mais tarde.'
               )
             }
             snackbar.setSnackbar(true)

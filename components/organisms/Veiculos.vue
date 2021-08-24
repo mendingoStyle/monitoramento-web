@@ -19,6 +19,18 @@
               :headers="headers"
               :search="pesquisa"
             >
+              <template v-slot:[`item.periodo`]="{ item }">
+                <v-chip>
+                  {{
+                    item.isContinuo
+                      ? 'Continuo'
+                      : formatDateMoment(item.dataInicio) +
+                        ' Até ' +
+                        formatDateMoment(item.dataFim)
+                  }}
+                </v-chip>
+              </template>
+
               <template v-slot:[`item.action`]="{ item }">
                 <v-icon
                   class="icon icon-delete white--text"
@@ -149,12 +161,11 @@
 <script lang="ts">
 import Vue from 'vue'
 import VeiculoMethod from '@/models/VeiculoMethod'
-import FormUtils from '@/mixins/FormUtils'
 import { auth, snackbar } from '@/utils/store-access'
 import { $axios } from '@/utils/nuxt-instance'
+import moment from 'moment'
 
 export default Vue.extend({
-  mixins: [FormUtils],
   data() {
     return {
       fullProfile: false,
@@ -179,6 +190,7 @@ export default Vue.extend({
         { text: 'Placa', align: 'start', value: 'placa' },
         { text: 'Periodo de Monitoramento', align: 'start', value: 'periodo' },
         { text: 'Status', align: 'start', value: 'status' },
+        { text: 'Versão', align: 'start', value: 'version' },
         { text: 'Ações', align: 'start', value: 'action' },
       ],
     }
@@ -190,16 +202,13 @@ export default Vue.extend({
     },
     cadastrarVeiculo() {
       if (!this.placa || !this.userId) {
-        this.error = 'Preencha todos os dados corretamente'
         snackbar.setMessage(
           'Não foi possível Cadastrar o Veiculo para monitoramento, Preencha todos os dados.'
         )
         snackbar.setSnackbar(true)
       } else if (
         !this.continuo &&
-        (!this.datesFormatted ||
-          !this.datesFormatted2 ||
-          this.datesFormatted.getTime() >= this.datesFormatted2.getTime())
+        (!this.datesFormatted || !this.datesFormatted2)
       ) {
         snackbar.setMessage(
           'Não foi possível Cadastrar o Veiculo para monitoramento, Datas de inicio e fim inválidas.'
@@ -238,7 +247,7 @@ export default Vue.extend({
           })
       }
     },
-    buscarUsuarios() {
+    buscarVeiculos() {
       const url = `/api/monitoramentos`
       $axios
         .$get(url)
@@ -255,6 +264,20 @@ export default Vue.extend({
           }
           snackbar.setSnackbar(true)
         })
+    },
+    parseDate(date) {
+      console.log(date)
+      if (!date) return null
+      const [day, month, year] = date.split('/')
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+    },
+    formatDate(date) {
+      if (!date) return null
+      const [year, month, day] = date.split('-')
+      return `${day}/${month}/${year}`
+    },
+    formatDateMoment(date) {
+      return moment(date, 'YYYY-MM-DD').format('DD/MM/YYYY')
     },
   },
 
@@ -273,6 +296,9 @@ export default Vue.extend({
       const d1 = this.formatDate(this.dates2)
       this.datesFormatted2 = `${d1}`
     },
+  },
+  created() {
+    this.buscarVeiculos()
   },
 })
 </script>

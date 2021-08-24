@@ -1,6 +1,7 @@
 interface CameraMethod {
-    name: string,
-    id_camera: string,
+    nome: string,
+    id: string,
+    mac: string,
     acoes: string,
     localizacao: string,
   }

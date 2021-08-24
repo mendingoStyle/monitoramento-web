@@ -122,11 +122,20 @@ export default Vue.extend({
       camera: 'Camera 1',
     }
   },
+  props: {
+    id: {
+      type: String,
+      require: true,
+    }
+  },
   methods: {
     editProfile() {
       // TODO
     },
   },
+  created() {
+    console.log(this.id)
+  }
 })
 </script>
 
