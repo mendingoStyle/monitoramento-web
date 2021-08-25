@@ -125,7 +125,7 @@ export default Vue.extend({
   props: {
     id: {
       type: String,
-      require: true,
+      required: true,
     }
   },
   methods: {

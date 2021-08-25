@@ -99,6 +99,7 @@
 import Vue from 'vue'
 import CameraMethod from '@/models/CameraMethod'
 import { $axios } from '@/utils/nuxt-instance'
+import { snackbar } from '@/utils/store-access'
 
 export default Vue.extend({
   data() {

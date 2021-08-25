@@ -42,12 +42,12 @@ export default Vue.extend({
       cameraMethod: {} as CameraMethod,
       cameraMethods: [
         {
-          id_camera: '1',
-          name: 'Camera 1',
+          id: '1',
+          nome: 'Camera 1',
         },
         {
-          id_camera: '2',
-          name: 'Camera 2',
+          id: '2',
+          nome: 'Camera 2',
         },
       ] as CameraMethod[],
     }
@@ -81,6 +81,4 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
-.component {
-}
 </style>

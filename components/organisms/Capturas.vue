@@ -169,13 +169,13 @@ export default Vue.extend({
     editProfile() {
       // TODO
     },
-    consultarCaptura(item) {
+    consultarCaptura(item: CapturaMethod) {
       this.dialog = true
+      this.id = item.id
       this.placa = item.placa
-      this.camera = item.cameraId
+      this.camera = item.cameraId.toString()
       this.data = item.dataHora
       this.detalhes = item.detalhes
-      this.id = item.id
       this.buscarImagens(item.id)
       console.log(this.url)
     },
@@ -197,15 +197,12 @@ export default Vue.extend({
           snackbar.setSnackbar(true)
         })
     },
-     buscarImagens(id) {
+    buscarImagens(id: string) {
       const url = `/api/capturas/${id}/imagens`
       $axios
         .$get(url)
         .then(async (r) => {
-        
-           this.url = `http://localhost:9000/api/capturas/${r.imagem}/imagem/captura`
-     
-           
+          this.url = `http://localhost:9000/api/capturas/${r.imagem}/imagem/captura`
         })
         .catch((error) => {
           if (error.response && error.response.data) {

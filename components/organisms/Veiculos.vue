@@ -266,18 +266,18 @@ export default Vue.extend({
           snackbar.setSnackbar(true)
         })
     },
-    parseDate(date) {
+    parseDate(date: string) {
       console.log(date)
       if (!date) return null
       const [day, month, year] = date.split('/')
       return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
     },
-    formatDate(date) {
+    formatDate(date: string) {
       if (!date) return null
       const [year, month, day] = date.split('-')
       return `${day}/${month}/${year}`
     },
-    formatDateMoment(date) {
+    formatDateMoment(date: Date) {
       return moment(date, 'YYYY-MM-DD').format('DD/MM/YYYY')
     },
   },
