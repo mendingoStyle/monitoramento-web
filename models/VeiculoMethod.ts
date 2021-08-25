@@ -1,6 +1,5 @@
 interface VeiculoMethod {
     placa: string,
-    id_veiculo: string,
     dataInicio: string,
     dataFim: string,
     status: string,

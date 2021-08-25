@@ -167,6 +167,7 @@ export default Vue.extend({
           .$post(url, body)
           .then((r) => {
             this.dialog = false
+            thi.buscarUsuarios()
             snackbar.setMessage('Usuário Cadastrado com sucesso!.')
             snackbar.setSnackbar(true)
           })

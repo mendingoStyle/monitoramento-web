@@ -186,7 +186,7 @@ export default Vue.extend({
       VeiculoMethod: {} as VeiculoMethod,
       veiculoMethods: [] as VeiculoMethod[],
       headers: [
-        { text: 'id', align: 'start', value: 'id_veiculo' },
+        { text: 'id', align: 'start', value: 'id' },
         { text: 'Placa', align: 'start', value: 'placa' },
         { text: 'Periodo de Monitoramento', align: 'start', value: 'periodo' },
         { text: 'Status', align: 'start', value: 'status' },
@@ -233,6 +233,7 @@ export default Vue.extend({
           .$post(url, body)
           .then((r) => {
             this.dialog = false
+            this.buscarVeiculos()
             snackbar.setMessage(
               'Veiculo para monitoramento Cadastrado com sucesso!.'
             )

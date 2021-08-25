@@ -39,11 +39,6 @@
       </v-card-text>
     </v-card>
     <v-dialog width="1500" v-model="dialog">
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn color="primary" dark v-bind="attrs" v-on="on">
-          Visualizar Captura
-        </v-btn>
-      </template>
       <v-card>
         <v-card-text>
           <v-card-title> Visualizar Captura Id : {{id}} </v-card-title>
@@ -57,8 +52,8 @@
                   class="align-center justify-center"
                 >
                   <v-img
-                    max-height="552"
-                    max-width="364"
+                    max-height="1000"
+                    max-width="1000"
                     :src="url"
                   ></v-img>
                 </v-col>
@@ -87,9 +82,6 @@
                     label="Placa"
                     class="placa-input"
                   ></v-text-field>
-                  <v-icon class="d-flex align-center"
-                    >mdi-circle-edit-outline</v-icon
-                  >
                 </v-col>
               </v-row>
               <v-row>
@@ -129,7 +121,6 @@
                   ></v-text-field>
                 </v-col>
               </v-row>
-              <v-btn> Voltar </v-btn>
               <v-btn> Histórico </v-btn>
             </v-col>
           </v-row>
@@ -169,7 +160,6 @@ export default Vue.extend({
         { text: 'id', align: 'start', value: 'id' },
         { text: 'Placa', align: 'start', value: 'placa' },
         { text: 'Camera', align: 'start', value: 'cameraId' },
-        { text: 'Detalhes', align: 'start', value: 'detalhes' },
         { text: 'Data/Hora', align: 'start', value: 'dataHora' },
         { text: 'Ações', align: 'start', value: 'action' },
       ],
@@ -211,8 +201,11 @@ export default Vue.extend({
       const url = `/api/capturas/${id}/imagens`
       $axios
         .$get(url)
-        .then((r) => {
-          this.url = '../images/public/' + r[0].imagem
+        .then(async (r) => {
+        
+           this.url = `http://localhost:9000/api/capturas/${r.imagem}/imagem/captura`
+     
+           
         })
         .catch((error) => {
           if (error.response && error.response.data) {
