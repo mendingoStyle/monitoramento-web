@@ -22,7 +22,14 @@
 </template>
 
 <script lang="ts">
-export default {}
+import Vue from 'vue'
+import { Snackbar } from '@/components/molecules'
+export default Vue.extend({
+  middleware: 'guest',
+  components: {
+    Snackbar
+  },
+})
 </script>
 
 <style lang="scss" scoped>

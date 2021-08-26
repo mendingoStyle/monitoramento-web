@@ -25,6 +25,7 @@ import {
 
 export default Vue.extend({
   layout: 'dashboard',
+  middleware: 'guard',
   components: {
     Inicio,
     MeuPerfil,

@@ -8,7 +8,7 @@
       app
     >
       <template #append>
-        <v-list-item nuxt>
+        <v-list-item nuxt @click="logout">
           <v-list-item-action><v-icon>mdi-logout </v-icon></v-list-item-action>
           <v-list-item-content>
             <v-list-item-title v-text="'Logout'" />
@@ -54,8 +54,10 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Snackbar } from '@/components/molecules'
+import { auth } from '@/store'
 
 export default Vue.extend({
+  middleware: 'guard',
   components: {
     Snackbar,
   },
@@ -99,6 +101,11 @@ export default Vue.extend({
       title: 'Monitoramento de Veiculos',
     }
   },
+  methods: {
+    logout() {
+      auth.logout()
+    }
+  }
 })
 </script>
 

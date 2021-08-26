@@ -28,6 +28,7 @@ export default {
     '~plugins/validate.ts',
     '~plugins/v-mask.ts',
     '~plugins/accessor.ts',
+    '~plugins/axios.ts',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

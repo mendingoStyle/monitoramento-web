@@ -4,12 +4,12 @@
     <v-card>
       <v-card-title>Login</v-card-title>
       <v-card-text>
-        <form action="">
+        <form @submit.prevent="login">
           <v-text-field
             outlined
             type="email"
             label="E-mail"
-            v-model="credentials.login"
+            v-model="credentials.email"
           ></v-text-field>
           <v-text-field
             outlined
@@ -17,8 +17,8 @@
             label="Senha"
             v-model="credentials.password"
           ></v-text-field>
-          <v-btn class="mb-2" @click="login" color="primary" block>Entrar</v-btn>
-          <v-btn outlined @click="login" color="secondary" block>Esqueci a senha</v-btn>
+          <v-btn class="mb-2" type="submit" color="primary" block>Entrar</v-btn>
+          <v-btn outlined color="secondary" block>Esqueci a senha</v-btn>
         </form>
       </v-card-text>
     </v-card>
@@ -28,21 +28,19 @@
 <script lang="ts">
 import Vue from 'vue'
 import Credentials from '@/models/Credentials'
+import { auth } from '@/store'
 
 export default Vue.extend({
   layout: 'login',
+  middleware: 'guest',
   data() {
     return {
       credentials: {} as Credentials
     }
   },
   methods: {
-    login() {
-      // TODO
-      console.log(JSON.stringify(this.credentials))
-      this.$router.push({
-        path: '/dashboard/inicio'
-      })
+    async login() {
+      await auth.login(this.credentials)
     }
   }
 })

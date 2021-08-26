@@ -94,4 +94,12 @@ export default class Auth extends VuexModule {
     const refresh = tokens?.refresh ? tokens?.refresh : $cookies.get('refresh')
     this.context.commit('UPDATE_TOKENS', { access, refresh })
   }
+
+  @Action
+  public logout() {
+    this.context.commit('LOGOUT')
+    window.$nuxt.$router.push({
+      path: '/'
+    })
+  }
 }
