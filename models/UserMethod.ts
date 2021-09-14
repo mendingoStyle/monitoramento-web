@@ -1,5 +1,5 @@
 interface UserMethod {
-    name: string,
+    nome: string,
     email: string,
     permissao: string,
     action: string,

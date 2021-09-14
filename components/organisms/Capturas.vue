@@ -33,6 +33,12 @@
                   mdi-delete-forever
                 </v-icon>
               </template>
+              <template v-slot:[`item.dataHora`]="{ item }">
+                {{ formatDateMoment(item.dataHora) }}
+              </template>
+              <template v-slot:[`item.cameraId`]="{ item }">
+                {{  'Camera ' + item.cameraId }}
+              </template>
             </v-data-table>
           </v-col>
         </v-row>
@@ -41,7 +47,7 @@
     <v-dialog width="1500" v-model="dialog">
       <v-card>
         <v-card-text>
-          <v-card-title> Visualizar Captura Id : {{id}} </v-card-title>
+          <v-card-title> Visualizar Captura Id : {{ id }} </v-card-title>
           <v-row>
             <v-col cols="12" sm="4" md="4">
               <v-row>
@@ -51,23 +57,11 @@
                   md="12"
                   class="align-center justify-center"
                 >
-                  <v-img
-                    max-height="1000"
-                    max-width="1000"
-                    :src="url"
-                  ></v-img>
+                  <v-img max-height="1000" max-width="1000" :src="url"></v-img>
                 </v-col>
                 <v-col cols="12" sm="12" md="12" class="d-flex justify">
-                  <v-img
-                    max-height="276"
-                    max-width="182"
-                    src=""
-                  ></v-img>
-                  <v-img
-                    max-height="276"
-                    max-width="182"
-                    src=""
-                  ></v-img>
+                  <v-img max-height="276" max-width="182" src=""></v-img>
+                  <v-img max-height="276" max-width="182" src=""></v-img>
                 </v-col>
               </v-row>
             </v-col>
@@ -140,6 +134,7 @@ import Vue from 'vue'
 import CapturaMethod from '@/models/CapturaMethod'
 import { $axios } from '@/utils/nuxt-instance'
 import { auth, snackbar } from '@/utils/store-access'
+import moment from 'moment'
 
 export default Vue.extend({
   data() {
@@ -178,6 +173,20 @@ export default Vue.extend({
       this.detalhes = item.detalhes
       this.buscarImagens(item.id)
       console.log(this.url)
+    },
+    parseDate(date: string) {
+      console.log(date)
+      if (!date) return null
+      const [day, month, year] = date.split('/')
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+    },
+    formatDate(date: string) {
+      if (!date) return null
+      const [year, month, day] = date.split('-')
+      return `${day}/${month}/${year}`
+    },
+    formatDateMoment(date: Date) {
+      return moment(date, 'YYYY-MM-DD').format('DD/MM/YYYY')
     },
     buscarCapturas() {
       const url = `/api/capturas`

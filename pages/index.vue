@@ -9,12 +9,14 @@
             outlined
             type="email"
             label="E-mail"
+            color="white"
             v-model="credentials.email"
           ></v-text-field>
           <v-text-field
             outlined
             type="password"
             label="Senha"
+            color="white"
             v-model="credentials.password"
           ></v-text-field>
           <v-btn class="mb-2" type="submit" color="primary" block>Entrar</v-btn>
@@ -30,19 +32,20 @@ import Vue from 'vue'
 import Credentials from '@/models/Credentials'
 import { auth } from '@/store'
 
+
 export default Vue.extend({
   layout: 'login',
   middleware: 'guest',
   data() {
     return {
-      credentials: {} as Credentials
+      credentials: {} as Credentials,
     }
   },
   methods: {
     async login() {
       await auth.login(this.credentials)
-    }
-  }
+    },
+  },
 })
 </script>
 
