@@ -34,13 +34,7 @@
               <template v-slot:[`item.action`]="{ item }">
                 <v-icon
                   class="icon icon-delete white--text"
-                  @click.stop="startDeleteDialog(item)"
-                >
-                  mdi-account-edit
-                </v-icon>
-                <v-icon
-                  class="icon icon-delete white--text"
-                  @click.stop="startDeleteDialog(item)"
+                  @click.stop="startDeleteDialog(item.id)"
                 >
                   mdi-delete
                 </v-icon>
@@ -155,17 +149,27 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <VeiculoDeleteDialog
+      @close="closeDeleteDialog"
+      :id="+deletingId"
+      :isActive="openDeleteDialog"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import VeiculoMethod from '@/models/VeiculoMethod'
+import { VeiculoDeleteDialog } from '@/components/molecules'
 import { auth, snackbar } from '@/utils/store-access'
 import { $axios } from '@/utils/nuxt-instance'
 import moment from 'moment'
 
 export default Vue.extend({
+  components: {
+    VeiculoDeleteDialog
+  },
   data() {
     return {
       fullProfile: false,
@@ -193,6 +197,8 @@ export default Vue.extend({
         { text: 'Versão', align: 'start', value: 'version' },
         { text: 'Ações', align: 'start', value: 'action' },
       ],
+      openDeleteDialog: false,
+      deletingId: ''
     }
   },
   methods: {
@@ -280,6 +286,15 @@ export default Vue.extend({
     formatDateMoment(date: Date) {
       return moment(date, 'YYYY-MM-DD').format('DD/MM/YYYY')
     },
+    startDeleteDialog(id: string) {
+      this.openDeleteDialog = true
+      this.deletingId = id
+    },
+    closeDeleteDialog() {
+      this.openDeleteDialog = false
+      this.deletingId = ''
+      this.buscarVeiculos()
+    }
   },
 
   watch: {

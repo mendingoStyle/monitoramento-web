@@ -1,7 +1,6 @@
 <template>
   <v-container>
     <MeuPerfil v-if="slug === 'meu-perfil'" />
-    <Caixa v-else-if="slug === 'caixa'" />
     <Usuarios v-else-if="slug === 'usuarios'" />
     <Veiculos v-else-if="slug === 'veiculos'" />
     <Capturas v-else-if="slug === 'capturas'" />
@@ -14,7 +13,6 @@
 import Vue from 'vue'
 import {
   Inicio,
-  Caixa,
   MeuPerfil,
   Usuarios,
   Veiculos,
@@ -29,7 +27,6 @@ export default Vue.extend({
   components: {
     Inicio,
     MeuPerfil,
-    Caixa,
     Usuarios,
     Veiculos,
     Capturas,
