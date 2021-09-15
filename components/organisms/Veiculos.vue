@@ -19,17 +19,7 @@
               :headers="headers"
               :search="pesquisa"
             >
-              <template v-slot:[`item.periodo`]="{ item }">
-                <v-chip>
-                  {{
-                    item.isContinuo
-                      ? 'Continuo'
-                      : formatDateMoment(item.dataInicio) +
-                        ' Até ' +
-                        formatDateMoment(item.dataFim)
-                  }}
-                </v-chip>
-              </template>
+              
 
               <template v-slot:[`item.action`]="{ item }">
                 <v-icon
@@ -67,78 +57,6 @@
           <v-text-field label="Placa" v-model="placa" color="white">
           </v-text-field>
 
-          <v-card-title>Periodo</v-card-title>
-          <v-checkbox
-            hide-details
-            label="Monitoramentarar Continuamente"
-            v-model="continuo"
-            class="mb-6"
-          ></v-checkbox>
-
-          <v-menu
-            :close-on-content-click="false"
-            ref="dateMenu"
-            v-model="dateMenu"
-            offset-y
-            max-width="290px"
-            min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                outlined
-                readonly
-                label="Inicio"
-                color="white"
-                v-model="datesFormatted"
-                :disabled="continuo"
-                v-on="on"
-                v-bind="attrs"
-                prepend-inner-icon="mdi-calendar"
-                :error-messages="errors[0]"
-              ></v-text-field>
-            </template>
-            <v-date-picker
-              no-title
-              ref="picker"
-              locale="pt-br"
-              v-model="dates"
-              :active-picker.sync="activePicker"
-              :min="new Date(Date.now()).toISOString().substr(0, 10)"
-              @change="save"
-            ></v-date-picker>
-          </v-menu>
-          <v-menu
-            :close-on-content-click="false"
-            ref="dateMenu"
-            v-model="dateMenu2"
-            offset-y
-            max-width="290px"
-            min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                outlined
-                readonly
-                label="Fim"
-                v-model="datesFormatted2"
-                v-on="on"
-                :disabled="continuo"
-                color="white"
-                v-bind="attrs"
-                prepend-inner-icon="mdi-calendar"
-                :error-messages="errors[0]"
-              ></v-text-field>
-            </template>
-            <v-date-picker
-              no-title
-              ref="picker"
-              locale="pt-br"
-              v-model="dates2"
-              :min="new Date(Date.now()).toISOString().substr(0, 10)"
-              :active-picker.sync="activePicker2"
-              @change="save"
-            ></v-date-picker>
-          </v-menu>
           <v-text-field v-model="observacoes" color="white" label="Observações">
           </v-text-field>
         </v-card-text>
@@ -176,23 +94,16 @@ export default Vue.extend({
       observacoes: '',
       pesquisa: '',
       placa: '',
-      datesFormatted: '',
+      dialog: false,
       userId: 1,
       activePicker: '',
       activePicker2: '',
-      datesFormatted2: '',
-      continuo: false,
-      dates: new Date().toISOString().substr(0, 10),
-      dates2: new Date().toISOString().substr(0, 10),
-      dateMenu: false,
-      dateMenu2: false,
-      dialog: false,
+
       VeiculoMethod: {} as VeiculoMethod,
       veiculoMethods: [] as VeiculoMethod[],
       headers: [
         { text: 'id', align: 'start', value: 'id' },
         { text: 'Placa', align: 'start', value: 'placa' },
-        { text: 'Periodo de Monitoramento', align: 'start', value: 'periodo' },
         { text: 'Status', align: 'start', value: 'status' },
         { text: 'Versão', align: 'start', value: 'version' },
         { text: 'Ações', align: 'start', value: 'action' },
@@ -202,38 +113,21 @@ export default Vue.extend({
     }
   },
   methods: {
-    save() {
-      this.dateMenu = false
-      this.dateMenu2 = false
-    },
+
     cadastrarVeiculo() {
       if (!this.placa || !this.userId) {
         snackbar.setMessage(
           'Não foi possível Cadastrar o Veiculo para monitoramento, Preencha todos os dados.'
         )
         snackbar.setSnackbar(true)
-      } else if (
-        !this.continuo &&
-        (!this.datesFormatted || !this.datesFormatted2)
-      ) {
-        snackbar.setMessage(
-          'Não foi possível Cadastrar o Veiculo para monitoramento, Datas de inicio e fim inválidas.'
-        )
-        snackbar.setSnackbar(true)
       } else {
         const url = `/api/monitoramentos`
         const body = {
           placa: this.placa,
-          dataInicio: this.datesFormatted
-            ? this.parseDate(this.datesFormatted)
-            : null,
-          dataFim: this.datesFormatted2
-            ? this.parseDate(this.datesFormatted2)
-            : null,
           status: 'NENHUMA_OCORRENCIA',
-          isContinuo: this.continuo,
           usuarioId: 1,
           observacoes: this.observacoes,
+          isContinuo: 1,
         }
         $axios
           .$post(url, body)
@@ -272,20 +166,7 @@ export default Vue.extend({
           snackbar.setSnackbar(true)
         })
     },
-    parseDate(date: string) {
-      console.log(date)
-      if (!date) return null
-      const [day, month, year] = date.split('/')
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-    },
-    formatDate(date: string) {
-      if (!date) return null
-      const [year, month, day] = date.split('-')
-      return `${day}/${month}/${year}`
-    },
-    formatDateMoment(date: Date) {
-      return moment(date, 'YYYY-MM-DD').format('DD/MM/YYYY')
-    },
+
     startDeleteDialog(id: string) {
       this.openDeleteDialog = true
       this.deletingId = id
@@ -298,20 +179,7 @@ export default Vue.extend({
   },
 
   watch: {
-    dateMenu(val) {
-      val && setTimeout(() => (this.activePicker = 'YEAR'))
-    },
-    dateMenu2(val) {
-      val && setTimeout(() => (this.activePicker2 = 'YEAR'))
-    },
-    dates() {
-      const d1 = this.formatDate(this.dates)
-      this.datesFormatted = `${d1}`
-    },
-    dates2() {
-      const d1 = this.formatDate(this.dates2)
-      this.datesFormatted2 = `${d1}`
-    },
+
   },
   created() {
     this.buscarVeiculos()
