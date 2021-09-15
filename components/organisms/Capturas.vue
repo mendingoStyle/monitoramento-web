@@ -185,9 +185,7 @@ export default Vue.extend({
       const [year, month, day] = date.split('-')
       return `${day}/${month}/${year}`
     },
-    formatDateMoment(date: Date) {
-      return moment(date, 'YYYY-MM-DD').format('DD/MM/YYYY')
-    },
+    
     buscarCapturas() {
       const url = `/api/capturas`
       $axios
