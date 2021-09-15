@@ -19,7 +19,13 @@
               :headers="headers"
               :search="pesquisa"
             >
-              
+              <template v-slot:[`item.status`]="{ item }">
+                {{
+                  item.status == 'OCORRENCIA_ENCONTRADA'
+                    ? 'Ocorrência Encontrada'
+                    : 'Nenhuma Ocorrência'
+                }}
+              </template>
 
               <template v-slot:[`item.action`]="{ item }">
                 <v-icon
@@ -54,6 +60,7 @@
       <v-card>
         <v-card-text>
           <v-card-title> Cadastrar Novo Veiculo </v-card-title>
+          Obs: cadastrar apenas as letras e os números da placa.
           <v-text-field label="Placa" v-model="placa" color="white">
           </v-text-field>
 
@@ -86,7 +93,7 @@ import moment from 'moment'
 
 export default Vue.extend({
   components: {
-    VeiculoDeleteDialog
+    VeiculoDeleteDialog,
   },
   data() {
     return {
@@ -109,11 +116,10 @@ export default Vue.extend({
         { text: 'Ações', align: 'start', value: 'action' },
       ],
       openDeleteDialog: false,
-      deletingId: ''
+      deletingId: '',
     }
   },
   methods: {
-
     cadastrarVeiculo() {
       if (!this.placa || !this.userId) {
         snackbar.setMessage(
@@ -175,12 +181,10 @@ export default Vue.extend({
       this.openDeleteDialog = false
       this.deletingId = ''
       this.buscarVeiculos()
-    }
+    },
   },
 
-  watch: {
-
-  },
+  watch: {},
   created() {
     this.buscarVeiculos()
   },
