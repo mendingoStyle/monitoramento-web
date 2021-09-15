@@ -32,7 +32,7 @@
                   <v-text-field
                     v-model="placa"
                     color="white"
-                    disabled
+                    :disabled="!isEditandoPlaca"
                     outlined
                     label="Placa"
                     class="placa-input"
@@ -82,8 +82,9 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn dark @click="dialog = false"> Voltar </v-btn>
-          <v-btn dark @click="editarPlacaCaptura"> Editar </v-btn>
+          <v-btn outlined @click="voltar"> Voltar </v-btn>
+          <v-btn dark @click="editarPlacaCaptura" v-if="!isEditandoPlaca"> Editar Placa </v-btn>
+          <v-btn color="primary" @click="salvarEdicaoPlaca" v-else> Salvar </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -115,6 +116,7 @@ export default Vue.extend({
       dialog: false,
       capturaMethod: {} as CapturaMethod,
       capturaMethods: [] as CapturaMethod[],
+      isEditandoPlaca: false,
 
       headers: [
         { text: 'id', align: 'start', value: 'id' },
@@ -127,7 +129,32 @@ export default Vue.extend({
   },
   methods: {
     editarPlacaCaptura() {
-      // TODO
+      this.isEditandoPlaca = true
+    },
+    salvarEdicaoPlaca() {
+      const url = `/api/capturas/${this.id}`
+      $axios
+        .$put(url, { placa: this.placa })
+        .then((r) => {
+          snackbar.setMessage('Placa alterada!')
+          snackbar.setSnackbar(true)
+          this.voltar()
+          this.buscarCapturas()
+        })
+        .catch((error) => {
+          if (error.response && error.response.data) {
+            snackbar.setMessage(error.response.data.error)
+          } else {
+            snackbar.setMessage(
+              'Não foi possível alterar a placa, tente mais tarde.'
+            )
+          }
+          snackbar.setSnackbar(true)
+        })
+    },
+    voltar() {
+      this.dialog = false
+      this.isEditandoPlaca = false
     },
     consultarCaptura(item: CapturaMethod) {
       this.dialog = true
