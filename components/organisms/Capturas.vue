@@ -1,49 +1,10 @@
 <template>
   <div class="component">
     <h1 class="title text-h4 mb-8">Capturas</h1>
-    <v-card class="mb-6">
-      <v-card-text>
-        <v-row>
-          <v-col cols="12" sm="6" md="6">
-            <label>Pesquisar Capturas: </label>
-            <v-text-field
-              v-model="pesquisa"
-              color="white"
-              filled
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="12" md="12" class="align-center justify-center">
-            <v-data-table
-              dark
-              :items="capturaMethods"
-              :headers="headers"
-              :search="pesquisa"
-            >
-              <template v-slot:[`item.action`]="{ item }">
-                <v-icon
-                  class="icon icon-delete white--text"
-                  @click.stop="consultarCaptura(item)"
-                >
-                  mdi-magnify
-                </v-icon>
-                <v-icon
-                  class="icon icon-delete white--text"
-                  @click.stop="startDeleteDialog(item)"
-                >
-                  mdi-delete-forever
-                </v-icon>
-              </template>
-              <template v-slot:[`item.dataHora`]="{ item }">
-                {{ formatDateMoment(item.dataHora) }}
-              </template>
-              <template v-slot:[`item.cameraId`]="{ item }">
-                {{  'Camera ' + item.cameraId }}
-              </template>
-            </v-data-table>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
+    <CapturasList
+      @visualizarCaptura="consultarCaptura($event)"
+      @excluirCaptura="startDeleteDialog($event)"
+    />
     <v-dialog width="1500" v-model="dialog">
       <v-card>
         <v-card-text>
@@ -122,7 +83,7 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-btn dark @click="dialog = false"> Voltar </v-btn>
-          <v-btn dark @click="editProfile"> Editar </v-btn>
+          <v-btn dark @click="editarPlacaCaptura"> Editar </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -135,8 +96,12 @@ import CapturaMethod from '@/models/CapturaMethod'
 import { $axios } from '@/utils/nuxt-instance'
 import { auth, snackbar } from '@/utils/store-access'
 import moment from 'moment'
+import { CapturasList } from '@/components/molecules'
 
 export default Vue.extend({
+  components: {
+    CapturasList
+  },
   data() {
     return {
       fullProfile: false,
@@ -161,7 +126,7 @@ export default Vue.extend({
     }
   },
   methods: {
-    editProfile() {
+    editarPlacaCaptura() {
       // TODO
     },
     consultarCaptura(item: CapturaMethod) {
