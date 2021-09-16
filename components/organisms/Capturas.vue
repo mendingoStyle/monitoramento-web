@@ -2,6 +2,8 @@
   <div class="component">
     <h1 class="title text-h4 mb-8">Capturas</h1>
     <CapturasList
+      :reload="reload"
+      @reloaded="reload = false"
       @visualizarCaptura="consultarCaptura($event)"
       @excluirCaptura="startDeleteDialog($event)"
     />
@@ -105,6 +107,7 @@ export default Vue.extend({
   },
   data() {
     return {
+      reload: false,
       fullProfile: false,
       pesquisa: '',
       id: '',
@@ -139,7 +142,7 @@ export default Vue.extend({
           snackbar.setMessage('Placa alterada!')
           snackbar.setSnackbar(true)
           this.voltar()
-          this.buscarCapturas()
+          this.reload = true
         })
         .catch((error) => {
           if (error.response && error.response.data) {
@@ -176,8 +179,7 @@ export default Vue.extend({
       if (!date) return null
       const [year, month, day] = date.split('-')
       return `${day}/${month}/${year}`
-    },
-    
+    }, 
     buscarCapturas() {
       const url = `/api/capturas`
       $axios
@@ -200,8 +202,8 @@ export default Vue.extend({
       const url = `/api/capturas/${id}/imagens`
       $axios
         .$get(url)
-        .then(async (r) => {
-          this.url = `http://localhost:9000/api/capturas/${r.imagem}/imagem/captura`
+        .then((r) => {
+          this.url = `http://localhost:9000/cron/capturas/${r.imagem}/imagem/captura`
         })
         .catch((error) => {
           if (error.response && error.response.data) {
@@ -222,6 +224,4 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
-.component {
-}
 </style>

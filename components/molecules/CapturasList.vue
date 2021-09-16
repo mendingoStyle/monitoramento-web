@@ -72,6 +72,12 @@ import { auth, snackbar } from '@/utils/store-access'
 import moment from 'moment'
 
 export default Vue.extend({
+  props: {
+    reload: {
+      type: Boolean,
+      required: true
+    }
+  },
   data() {
     return {
       options: {
@@ -159,6 +165,12 @@ export default Vue.extend({
     }
   },
   watch: {
+    reload: function (newVal) {
+      if (newVal) {
+        this.buscarCapturas()
+        this.$emit('reloaded', true)
+      }
+    },
     'options.filter': function (newVal, oldVal) {
       if (newVal !== oldVal) this.buscarCapturas()
     },
