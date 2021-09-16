@@ -61,7 +61,7 @@
                     color="white"
                     disabled
                     outlined
-                    label="Data/Hora da Captura"
+                    label="Data da Captura"
                     class="placa-input"
                   ></v-text-field>
                 </v-col>
@@ -202,21 +202,11 @@ export default Vue.extend({
       this.placa = item.placa
       this.camera = item.cameraId.toString()
       this.data = item.dataHora
-      this.detalhes = item.detalhes
+      this.detalhes = 'Horario da Captura ' + item.detalhes
       this.buscarImagens(item.id)
       console.log(this.url)
     },
-    parseDate(date: string) {
-      console.log(date)
-      if (!date) return null
-      const [day, month, year] = date.split('/')
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-    },
-    formatDate(date: string) {
-      if (!date) return null
-      const [year, month, day] = date.split('-')
-      return `${day}/${month}/${year}`
-    }, 
+    
     buscarCapturas() {
       const url = `/api/capturas`
       $axios

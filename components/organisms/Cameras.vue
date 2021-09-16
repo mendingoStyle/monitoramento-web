@@ -19,81 +19,36 @@
               :headers="headers"
               :search="pesquisa"
             >
-              <template v-slot:[`item.localizacao`]="{ item }">
-                <v-icon
-                  class="icon icon-delete white--text"
-                  @click.stop="dialog2Edit(item)"
-                >
-                  mdi-magnify
-                </v-icon>
-              </template>
               <template v-slot:[`item.action`]="{ item }">
                 <v-icon
                   class="icon icon-delete white--text"
-                  @click.stop="dialogEdit(item)"
+                  @click.stop="dialogEdit(item.id)"
                 >
                   mdi-circle-edit-outline
                 </v-icon>
-                <v-dialog width="800" v-model="dialog">
-                  <v-card>
-                    <v-card-title> Editar Camera Usuario </v-card-title>
-                    <v-card-text>
-                      <v-text-field
-                        label="Nome da Camera"
-                        v-model="nome"
-                        color="white"
-                      >
-                      </v-text-field>
-                      <v-text-field
-                        label="Observacoes"
-                        v-model="obs"
-                        color="white"
-                      >
-                      </v-text-field>
-                    </v-card-text>
-
-                    <v-divider></v-divider>
-
-                    <v-card-actions>
-                      <v-btn dark @click="dialog = false"> Voltar </v-btn>
-                      <v-btn dark @click="EditarCamera(item)">
-                        Confirmar
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
               </template>
             </v-data-table>
           </v-col>
         </v-row>
       </v-card-text>
     </v-card>
-
-    <v-dialog width="800" v-model="dialog2">
+    <v-dialog width="800" v-model="dialog">
       <v-card>
-        <v-card-title> Localização da Camera </v-card-title>
+        <v-card-title> Editar Camera Usuario </v-card-title>
         <v-card-text>
-          <v-text-field label="Pais" color="white" disabled> </v-text-field>
-          <v-text-field label="Estado" color="white" disabled> </v-text-field>
-          <v-text-field label="Cidade" color="white" disabled> </v-text-field>
-          <v-text-field label="Bairro" color="white" disabled> </v-text-field>
-          <v-text-field label="Rua" color="white"> </v-text-field>
-          <v-text-field label="Complemento" color="white" disabled>
-          </v-text-field>
-          <v-text-field label="Numero" color="white" disabled> </v-text-field>
-          <v-text-field label="Latitude" color="white" disabled> </v-text-field>
-          <v-text-field label="Longitude" color="white" disabled>
+          <v-text-field label="Nome da Camera" v-model="nome" color="white">
           </v-text-field>
         </v-card-text>
 
         <v-divider></v-divider>
 
         <v-card-actions>
-          <v-btn dark @click="dialog2 = false"> Voltar </v-btn>
-          <v-btn dark @click="dialog2 = false"> Confirmar </v-btn>
+          <v-btn dark @click="dialog = false"> Voltar </v-btn>
+          <v-btn dark @click="EditarCamera(camera)"> Confirmar </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+   
   </div>
 </template>
 
@@ -109,15 +64,7 @@ export default Vue.extend({
       fullProfile: false,
       pesquisa: '',
       nome: '',
-      cidade: '',
-      pais: '',
-      estado: '',
-      bairro: '',
-      rua: '',
-      numero: '',
-      latitude: '',
-      complemento: '',
-      longitude: '',
+      camera: null,
       obs: '',
       dialog: false,
       dialog2: false,
@@ -128,7 +75,7 @@ export default Vue.extend({
         { text: 'id', align: 'start', value: 'id' },
         { text: 'Nome do Equipamento', align: 'start', value: 'nome' },
         { text: 'Mac', align: 'start', value: 'mac' },
-        { text: 'Localização/Endereço', align: 'start', value: 'localizacao' },
+        { text: 'Observações', align: 'start', value: 'observacoes' },
         { text: 'Ações', align: 'start', value: 'action' },
       ],
     }
@@ -155,25 +102,21 @@ export default Vue.extend({
           snackbar.setSnackbar(true)
         })
     },
-    dialogEdit(item: CameraMethod) {
-      console.log(item)
+    dialogEdit(item : any) {
+      this.camera = item
       this.dialog = true
     },
-    dialog2Edit(item: CameraMethod) {
-      console.log(item)
-      this.dialog2 = true
-    },
-    EditarCamera(item: CameraMethod) {
+   
+    EditarCamera(item : any) {
       if (this.nome == '') {
         snackbar.setMessage('Preencha o nome.')
       } else {
         const body = {
           nome: this.nome,
-          observacoes: this.obs
         }
-        const url = `/api/cameras/${item.id}`
+        const url = `/api/cameras/${item}`
         $axios
-          .$put(url,body)
+          .$put(url, body)
           .then((r) => {
             console.log(r)
             this.buscarCameras()

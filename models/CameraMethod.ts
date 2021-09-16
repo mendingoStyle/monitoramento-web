@@ -3,7 +3,7 @@ interface CameraMethod {
     id: string,
     mac: string,
     acoes: string,
-    localizacao: string,
+    observacoes: string,
   }
   
   export default CameraMethod
