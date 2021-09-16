@@ -28,7 +28,7 @@
                 <div v-if="item.perfil != 'ADMIN'">
                   <v-icon
                     class="icon icon-delete white--text"
-                    @click.stop="startDeleteDialog(item)"
+                    @click.stop="openEditarUsuario(item.id)"
                   >
                     mdi-account-edit
                   </v-icon>
@@ -96,7 +96,8 @@
 
         <v-card-actions>
           <v-btn dark @click="dialog = false"> Voltar </v-btn>
-          <v-btn dark @click="cadastrarUsuario"> Confirmar </v-btn>
+          <v-btn color="primary" v-if="!isEditandoUsuario" @click="cadastrarUsuario"> Confirmar </v-btn>
+          <v-btn color="primary" v-else @click="editarUsuario"> Editar </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -132,11 +133,53 @@ export default Vue.extend({
         { text: 'Status', align: 'start', value: 'isAtivo' },
         { text: 'Ações', align: 'start', value: 'action' },
       ],
+      isEditandoUsuario: false,
+      id: 0
     }
   },
   methods: {
-    editProfile() {
-      // TODO
+    openEditarUsuario(id: number) {
+      this.isEditandoUsuario = true
+      this.id = id
+      this.dialog = true
+      this.buscarUsuario()
+    },
+    editarUsuario() {
+      if (this.senhaUser !== this.senhaConfirmUser) {
+        snackbar.setMessage(
+          'Não foi possível editar o usuário, Campo Senha e Confirmar Senha não conferem.'
+        )
+        snackbar.setSnackbar(true)
+        return
+      } 
+
+      const body = {
+        nome: this.nomeUser,
+        senha: this.senhaUser,
+        email: this.emailUser,
+        permissao: this.perfilUser,
+      }
+
+      const url = `/api/usuarios/${this.id}`
+      $axios
+        .$put(url, body)
+        .then((r) => {
+          this.isEditandoUsuario = false
+          this.dialog = false
+          this.buscarUsuarios()
+        })
+        .catch((error) => {
+          if (error.response && error.response.data) {
+            snackbar.setMessage(error.response.data.error)
+          } else {
+            snackbar.setMessage(
+              'Não foi possível editar o usuário, tente mais tarde.'
+            )
+          }
+          snackbar.setSnackbar(true)
+          this.isEditandoUsuario = false
+          this.dialog = false
+        })
     },
     cadastrarUsuario() {
       if (
@@ -185,6 +228,28 @@ export default Vue.extend({
       }
     },
 
+    buscarUsuario() {
+      const url = `/api/usuarios/${this.id}`
+      $axios
+        .$get(url)
+        .then((r) => {
+          this.emailUser = r.email
+          this.nomeUser = r.nome
+          this.perfilUser = r.perfil
+          this.senhaUser = ''
+          this.senhaConfirmUser = ''
+        })
+        .catch((error) => {
+          if (error.response && error.response.data) {
+            snackbar.setMessage(error.response.data.error)
+          } else {
+            snackbar.setMessage(
+              'Não foi possível consultar o usuário, tente mais tarde.'
+            )
+          }
+          snackbar.setSnackbar(true)
+        })
+    },
     buscarUsuarios() {
       const url = `/api/usuarios`
       $axios
