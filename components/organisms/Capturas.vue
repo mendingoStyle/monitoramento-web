@@ -201,8 +201,8 @@ export default Vue.extend({
       this.id = item.id
       this.placa = item.placa
       this.camera = item.cameraId.toString()
-      this.data = item.dataHora
-      this.detalhes = 'Horario da Captura ' + item.detalhes
+      this.data = moment(String(item.dataHora)).format('MM/DD/YYYY')
+      this.detalhes = 'Horario da Captura: ' + item.detalhes
       this.buscarImagens(item.id)
       console.log(this.url)
     },
