@@ -75,16 +75,13 @@ export default class Auth extends VuexModule {
         })
         .catch(error => {
           if (error.response && error.response.data) {
-            snackbar.setMessage(error.response.data.error)
+            alert(error.response.data.error)
           } else {
-            snackbar.setMessage('Não foi possível efetuar o login, tente mais tarde.')
+            alert('Não foi possível efetuar o login, tente mais tarde.')
           }
-
-          snackbar.setSnackbar(true)
         })
     } catch (err) {
-      snackbar.setMessage('Não foi possível efetuar o login.')
-      snackbar.setSnackbar(true)
+      alert('Não foi possível efetuar o login.')
     }
   }
 

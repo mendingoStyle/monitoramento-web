@@ -33,17 +33,18 @@
                     mdi-account-edit
                   </v-icon>
                   <v-icon
+                    v-if="item.isAtivo"
                     class="icon icon-delete white--text"
-                    @click.stop="startDeleteDialog(item)"
+                    @click.stop="bloquear(item.id)"
                   >
                     mdi-block-helper
                   </v-icon>
                   <v-icon
-                    color="info"
-                    class="icon icon-info white--text"
-                    @click.stop="openCardInfo(item)"
+                    v-else
+                    class="icon icon-delete white--text"
+                    @click.stop="desbloquear(item.id)"
                   >
-                    mdi-delete
+                    mdi-account-check
                   </v-icon>
                 </div>
               </template>
@@ -205,6 +206,46 @@ export default Vue.extend({
     selecionarPerfil(event: string) {
       this.perfilUser = event
     },
+    bloquear(id: number) {
+      const url = `/api/usuarios/${id}`
+      $axios
+        .$put(url, { isAtivo: false })
+        .then((r) => {
+          this.buscarUsuarios()
+          snackbar.setMessage("Usuario bloqueado.")
+          snackbar.setSnackbar(true)
+        })
+        .catch((error) => {
+          if (error.response && error.response.data) {
+            snackbar.setMessage(error.response.data.error)
+          } else {
+            snackbar.setMessage(
+              'Não foi possível bloquear o usuário, tente mais tarde.'
+            )
+          }
+          snackbar.setSnackbar(true)
+        })
+    },
+    desbloquear(id: number) {
+      const url = `/api/usuarios/${id}`
+      $axios
+        .$put(url, { isAtivo: true })
+        .then((r) => {
+          this.buscarUsuarios()
+          snackbar.setMessage("Usuario desbloqueado.")
+          snackbar.setSnackbar(true)
+        })
+        .catch((error) => {
+          if (error.response && error.response.data) {
+            snackbar.setMessage(error.response.data.error)
+          } else {
+            snackbar.setMessage(
+              'Não foi possível desbloquear o usuario, tente mais tarde.'
+            )
+          }
+          snackbar.setSnackbar(true)
+        })
+    }
   },
   created() {
     this.buscarUsuarios()
