@@ -27,7 +27,7 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col cols="12" sm="6" md="6">
+            <v-col cols="12" sm="6" md="6" v-if="!visualizandoHistorico">
               <v-row>
                 <v-col cols="12" sm="4" md="4" class="d-flex">
                   <v-text-field
@@ -77,7 +77,31 @@
                   ></v-text-field>
                 </v-col>
               </v-row>
-              <v-btn> Histórico </v-btn>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" v-else style="overflow-y: scroll">
+              <v-simple-table>
+                <template #default>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Valor anterior</th>
+                      <th>Valor atual</th>
+                      <th>Usuário</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(item, i) in historicos"
+                      :key="`hist_${item.i}`"
+                    >
+                      <td>{{ i }}</td>
+                      <td>{{ item.valorAnterior }}</td>
+                      <td>{{ item.valorAtual }}</td>
+                      <td>{{ item.usuario.nome }}</td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
             </v-col>
           </v-row>
         </v-card-text>
@@ -86,6 +110,7 @@
           <v-btn outlined @click="voltar"> Voltar </v-btn>
           <v-btn dark @click="editarPlacaCaptura" v-if="!isEditandoPlaca"> Editar Placa </v-btn>
           <v-btn color="primary" @click="salvarEdicaoPlaca" v-else> Salvar </v-btn>
+          <v-btn color="accent" @click="visualizarHistorico"> Historico </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -119,6 +144,8 @@ export default Vue.extend({
       capturaMethod: {} as CapturaMethod,
       capturaMethods: [] as CapturaMethod[],
       isEditandoPlaca: false,
+      visualizandoHistorico: false,
+      historicos: [],
 
       headers: [
         { text: 'id', align: 'start', value: 'id' },
@@ -130,6 +157,13 @@ export default Vue.extend({
     }
   },
   methods: {
+    visualizarHistorico() {
+      this.visualizandoHistorico = true
+      this.buscarHistorico()
+    },
+    voltarHistorico() {
+      this.visualizandoHistorico = false
+    },
     editarPlacaCaptura() {
       this.isEditandoPlaca = true
     },
@@ -155,8 +189,12 @@ export default Vue.extend({
         })
     },
     voltar() {
-      this.dialog = false
-      this.isEditandoPlaca = false
+      if (this.visualizandoHistorico) {
+        this.voltarHistorico()
+      } else {
+        this.dialog = false
+        this.isEditandoPlaca = false
+      }
     },
     consultarCaptura(item: CapturaMethod) {
       this.dialog = true
@@ -215,6 +253,24 @@ export default Vue.extend({
           snackbar.setSnackbar(true)
         })
     },
+    buscarHistorico() {
+      const url = `/api/capturas/${this.id}/historico`
+      $axios
+        .$get(url)
+        .then((r) => {
+          this.historicos = r
+        })
+        .catch((error) => {
+          if (error.response && error.response.data) {
+            snackbar.setMessage(error.response.data.error)
+          } else {
+            snackbar.setMessage(
+              'Não foi possível consultar o historico, tente mais tarde.'
+            )
+          }
+          snackbar.setSnackbar(true)
+        })
+    }
   },
   created() {
     this.buscarCapturas()
