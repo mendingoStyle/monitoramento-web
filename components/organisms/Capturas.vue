@@ -5,7 +5,6 @@
       :reload="reload"
       @reloaded="reload = false"
       @visualizarCaptura="consultarCaptura($event)"
-      @excluirCaptura="startDeleteDialog($event)"
     />
     <v-dialog width="1500" v-model="dialog">
       <v-card>

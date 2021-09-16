@@ -46,12 +46,6 @@
           >
             mdi-magnify
           </v-icon>
-          <v-icon
-            class="icon icon-delete white--text"
-            @click.stop="$emit('excluirCaptura', item)"
-          >
-            mdi-delete-forever
-          </v-icon>
         </template>
         <template v-slot:[`item.dataHora`]="{ item }">
           {{ formatDateMoment(item.dataHora) }}
