@@ -52,7 +52,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseUrl: 'http://localhost:9000'
+    baseUrl: process.env.API_URL || 'http://localhost:9000'
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
@@ -76,5 +76,10 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  },
+
+  env: {
+    baseUrl: process.env.BASE_URL || 'http://localhost:3000',
+    apiUrl: process.env.API_URL || 'http://localhost:9000'
   }
 }

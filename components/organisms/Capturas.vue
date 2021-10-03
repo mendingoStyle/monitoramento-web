@@ -230,7 +230,7 @@ export default Vue.extend({
       $axios
         .$get(url)
         .then((r) => {
-          this.url = `http://localhost:9000/cron/capturas/${r.imagem}/imagem/captura`
+          this.url = `${process.env.apiUrl}/cron/capturas/${r.imagem}/imagem/captura`
         })
         .catch((error) => {
           if (error.response && error.response.data) {
