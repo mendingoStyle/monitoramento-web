@@ -42,18 +42,20 @@
       </v-container>
     </v-main>
     <Snackbar />
+    <NotificationDialog />
   </v-app>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import { Snackbar } from '@/components/molecules'
+import { Snackbar, NotificationDialog } from '@/components/molecules'
 import { auth } from '@/store'
 
 export default Vue.extend({
   middleware: 'guard',
   components: {
     Snackbar,
+    NotificationDialog
   },
   data() {
     return {

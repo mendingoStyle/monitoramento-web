@@ -80,6 +80,7 @@ export default {
 
   env: {
     baseUrl: process.env.BASE_URL || 'http://localhost:3000',
-    apiUrl: process.env.API_URL || 'http://localhost:9000'
+    apiUrl: process.env.API_URL || 'http://localhost:9000',
+    wsUrl: process.env.WS_URL || 'ws://localhost:4444',
   }
 }

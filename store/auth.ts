@@ -114,9 +114,11 @@ export default class Auth extends VuexModule {
     const refresh = tokens?.refresh ? tokens?.refresh : $cookies.get('refresh')
     this.context.commit('UPDATE_TOKENS', { access, refresh })
     
-    if (!this.$permission) {
+    if (!this.$permission && this.$accessToken) {
       const permission = await $axios.$get('/api/usuarios/search/myself')
       this.context.commit('SET_PERMISSION', permission.permissao)
+    } else {
+      this.context.commit('SET_PERMISSION', Permission.USUARIO)
     }
   }
 
