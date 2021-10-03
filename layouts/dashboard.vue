@@ -16,7 +16,7 @@
         </v-list-item>
       </template>
       <v-list>
-        <v-list-item v-for="(item, i) in items" :key="i" nuxt :to="item.to">
+        <v-list-item v-for="(item, i) in menus" :key="i" nuxt :to="item.to">
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
@@ -41,12 +41,6 @@
         <Nuxt />
       </v-container>
     </v-main>
-    <!-- <v-footer
-      :absolute="!fixed"
-      app
-    >
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer> -->
     <Snackbar />
   </v-app>
 </template>
@@ -99,6 +93,17 @@ export default Vue.extend({
       ],
       miniVariant: false,
       title: 'Monitoramento de Veiculos',
+    }
+  },
+  computed: {
+    menus(): Array<any> {
+      const permission = auth.$permission
+      let menuItems = this.items
+      if (permission && permission == 'USUARIO') {
+        menuItems = this.items.filter(it => it.to != 'usuarios')
+      }
+
+      return menuItems
     }
   },
   methods: {

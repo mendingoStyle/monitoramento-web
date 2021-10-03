@@ -10,10 +10,16 @@ interface Token {
   refresh?: string
 }
 
+enum Permission {
+  USUARIO = 'USUARIO',
+  ADMIN = 'ADMIN',
+}
+
 @Module({ name: 'auth', stateFactory: true, namespaced: true })
 export default class Auth extends VuexModule {
   private accessToken: undefined | string
   private refreshToken: undefined | string
+  private permission: Permission | undefined
 
   public get $accessToken() {
     return this.accessToken
@@ -21,6 +27,10 @@ export default class Auth extends VuexModule {
 
   public get $refreshToken() {
     return this.refreshToken
+  }
+
+  public get $permission() {
+    return this.permission
   }
 
   public get $header() {
@@ -48,9 +58,18 @@ export default class Auth extends VuexModule {
   }
 
   @Mutation
+  private SET_PERMISSION(permission: string) {
+    if (permission == Permission.USUARIO)
+      this.permission = Permission.USUARIO
+    if (permission == Permission.ADMIN)
+      this.permission = Permission.ADMIN 
+  }
+
+  @Mutation
   private LOGOUT() {
     this.refreshToken = undefined
     this.accessToken = undefined
+    this.permission = undefined
     $cookies.remove('token')
     $cookies.remove('refresh')
   }
@@ -65,10 +84,14 @@ export default class Auth extends VuexModule {
   public async login(credentials: Credentials) {
     try {
       $axios.post('/auth/login', credentials)
-        .then(result => {
+        .then(async result => {
           
           this.context.commit('SET_REFRESH_TOKEN', result.data.refreshToken)
           this.context.commit('SET_ACCESS_TOKEN', result.data.accessToken)
+          
+          const permission = await $axios.$get('/api/usuarios/search/myself')
+          this.context.commit('SET_PERMISSION', permission.permissao)
+
           window.$nuxt.$router.push({
             path: '/dashboard/inicio'
           })
@@ -86,10 +109,15 @@ export default class Auth extends VuexModule {
   }
 
   @Action
-  public update(tokens: Token) {
+  public async update(tokens: Token) {
     const access = tokens?.access ? tokens?.access : $cookies.get('token')
     const refresh = tokens?.refresh ? tokens?.refresh : $cookies.get('refresh')
     this.context.commit('UPDATE_TOKENS', { access, refresh })
+    
+    if (!this.$permission) {
+      const permission = await $axios.$get('/api/usuarios/search/myself')
+      this.context.commit('SET_PERMISSION', permission.permissao)
+    }
   }
 
   @Action

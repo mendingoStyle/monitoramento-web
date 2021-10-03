@@ -1,16 +1,18 @@
 <template>
   <v-container>
     <MeuPerfil v-if="slug === 'meu-perfil'" />
-    <Usuarios v-else-if="slug === 'usuarios'" />
     <Veiculos v-else-if="slug === 'veiculos'" />
     <Capturas v-else-if="slug === 'capturas'" />
     <Cameras v-else-if="slug === 'cameras'" />
-    <ConsultarCaptura v-else-if="slug === 'consultarCaptura'" /> <Inicio v-else />
+    <ConsultarCaptura v-else-if="slug === 'consultarCaptura'" /> 
+    <Usuarios v-else-if="slug === 'usuarios' && permission == 'ADMIN'" />
+    <Inicio v-else />
   </v-container>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import { auth } from '@/store'
 import {
   Inicio,
   MeuPerfil,
@@ -37,11 +39,16 @@ export default Vue.extend({
     slug() {
       return this.$route.params.slug
     },
+    permission(): string {
+      if (auth.$permission) {
+        return auth.$permission.toString()
+      }
+
+      return 'USUARIO'
+    }
   },
 })
 </script>
 
 <style lang="scss" scoped>
-.component {
-}
 </style>
